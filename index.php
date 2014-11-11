@@ -2,6 +2,7 @@
 
 $timezones = array('Europe/Rome');
 date_default_timezone_set('Europe/Rome');
+set_time_limit(600);
 
 $minutes_to_remove = 10;
 $minutes_to_add = 5000;
