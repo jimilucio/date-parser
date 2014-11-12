@@ -1,6 +1,7 @@
 <?php
 $filename = "EURUSD_5mins";
 $filedates = "datelist.csv";
+$folderPath = "result";
 
 $timezones = array('Europe/Rome');
 date_default_timezone_set('Europe/Rome');
@@ -12,7 +13,7 @@ $minutes_to_add = 2880;
 $dateList = getDateList($filedates);
 
 // Make a copy for create the temp file to be crunched.
-copy($filename.".csv", $filename."_snack.csv");
+copy($filename.".csv", "./".$folderPath."/".$filename."_snack.csv");
 
 foreach ($dateList as $value) {
    
@@ -25,7 +26,9 @@ foreach ($dateList as $value) {
    echo "Start date to filter: ". $startDate->format('d-m-Y H:i:s')."<br/>";
    echo "End date to filter: ". $endDate->format('d-m-Y H:i:s')."<br/><br/>";
 
-   $newCsv = getListFromDate($startDate->getTimestamp(), $endDate->getTimestamp(), $filename."_snack");
+   $newCsv = getListFromDate($startDate->getTimestamp(), $endDate->getTimestamp(), "./".$folderPath."/".$filename."_snack");
+
+   echo "File creato: <a href='".$folderPath."/".$filename."''>". $folderPath."/".$filename."_snack</a><br><br>";
 
    //exit();
 }
@@ -56,7 +59,7 @@ function getListFromDate($startDate, $endDate, $filenameOriginal){
           //echo "Start: " . $startDate ." - Date: " . $tempDataTimestamp." End:  ". $endDate."<br/>";
           //exit();
           if($tempDataTimestamp <= $endDate && $tempDataTimestamp >= $startDate){
-          	echo "Start: " . $startDate ." - Date: " . $tempDataTimestamp." End:  ". $endDate."<br/>";
+          	//echo "Start: " . $startDate ." - Date: " . $tempDataTimestamp." End:  ". $endDate."<br/>";
           	$returnObj[] = $data;
             fputcsv($handleWrite, $data);
           } elseif($tempDataTimestamp > $endDate) {
