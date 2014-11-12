@@ -33,7 +33,7 @@ foreach ($dateList as $value) {
 
    $newCsv = getListFromDate($startDate->getTimestamp(), $endDate->getTimestamp(), "./".$folderPath."/".$filename."_snack");
 
-   echo "File creato: <a href='".$folderPath."/".$filename."''>". $folderPath."/".$filename."_snack</a><br><br>";
+   //echo "File creato: <a href='".$folderPath."/".$filename.".csv'>". $folderPath."/".$filename."_snack</a><br><br>";
 
    //exit();
 }
@@ -73,6 +73,9 @@ function getListFromDate($startDate, $endDate, $filenameOriginal){
           		fwrite($handleTemp, fread($handle, 8192));
           	}
           	copy($filenameTemp, $filename);
+
+            echo "File creato: <a href='".$folderPath."/".$filename.".csv'>". $folderPath."/".$filename."</a><br><br>";
+
           	//ftell($handle);
           	continue;
           }
