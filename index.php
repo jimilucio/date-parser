@@ -72,9 +72,7 @@ function getListFromDate($startDate, $endDate, $filenameOriginal){
           	while(!feof($handle)) {
           		fwrite($handleTemp, fread($handle, 8192));
           	}
-          	copy($filenameTemp, $filename);
-
-            echo "File creato: <a href='".$folderPath."/".$filename.".csv'>". $folderPath."/".$filename."</a><br><br>";
+          	copy($filenameTemp, $filename);            
 
           	//ftell($handle);
           	continue;
@@ -88,6 +86,7 @@ function getListFromDate($startDate, $endDate, $filenameOriginal){
    fclose($handleWrite);
    fclose($handleTemp);
 
+   echo "File creato: <a href='".$folderPath."/".$filenameWrite."'>". $folderPath."/".$filenameWrite."</a><br><br>";
    return $returnObj;
 
 }
