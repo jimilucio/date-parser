@@ -86,7 +86,7 @@ function getListFromDate($startDate, $endDate, $filenameOriginal){
    fclose($handleWrite);
    fclose($handleTemp);
 
-   echo "File creato: <a href='".$folderPath."/".$filenameWrite."'>". $folderPath."/".$filenameWrite."</a><br><br>";
+   echo "File creato: <a href='./".$folderPath."/".$filenameWrite."'>". $folderPath."/".$filenameWrite."</a><br><br>";
    return $returnObj;
 
 }
