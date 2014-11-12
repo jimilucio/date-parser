@@ -1,11 +1,16 @@
 <?php
+//session var
+date_default_timezone_set('Europe/Rome');
+set_time_limit(600);
+error_reporting(E_ALL);
+
+//constant
 $filename = "EURUSD_5mins";
 $filedates = "datelist.csv";
 $folderPath = "result";
 
 $timezones = array('Europe/Rome');
-date_default_timezone_set('Europe/Rome');
-set_time_limit(600);
+
 
 $minutes_to_remove = 10;
 $minutes_to_add = 2880;
