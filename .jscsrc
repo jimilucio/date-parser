@@ -1,0 +1,6 @@
+{
+    "sublimelinterExecutableMap": {
+        "php": "/usr/bin/php"
+    },
+    "sublimelinterMarkStyle": "outline"
+}
