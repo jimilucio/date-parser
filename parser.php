@@ -1,4 +1,4 @@
-<?
+<?php
 //constant
 $filename = "EURUSD_5mins";
 $filedates = "datelist.csv";
