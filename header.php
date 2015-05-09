@@ -1,7 +1,4 @@
 <?php
-error_reporting(-1);
-ini_set('display_errors', 'On');
-
 //session var
 date_default_timezone_set('Europe/Rome');
 set_time_limit(600);
