@@ -55,7 +55,7 @@ require_once __DIR__ . '/class/parser.php';
         </div>
       </div>
 
-      <form action="<?=$_SERVER['PHP_SELF']?>" method="POST">
+      <form action="/parse" method="POST">
         <div class="row">
           <div class="large-6 columns">
             <h3>Database file:</h3>

@@ -54,7 +54,7 @@ require_once __DIR__ . '/class/upload.php';
     <div class="large-6 columns">
       <fieldset>
         <legend>Upload CSV completo</legend>
-        <form action="<?=$_SERVER['PHP_SELF']?>" enctype="multipart/form-data" method="POST">
+        <form action="/" enctype="multipart/form-data" method="POST">
           <label>Insert file</label>
           <br>
           <input type="hidden" name="action" value="upload">
@@ -70,7 +70,7 @@ require_once __DIR__ . '/class/upload.php';
       
       <fieldset>
         <legend>Upload list of date</legend>
-        <form action="<?=$_SERVER['PHP_SELF']?>" enctype="multipart/form-data" method="POST">
+        <form action="/" enctype="multipart/form-data" method="POST">
           
           <label>Insert file</label>
           <br>
