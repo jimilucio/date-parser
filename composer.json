@@ -1,0 +1,6 @@
+{
+  "require" : {
+    "faisalman/simple-excel-php" : "0.3.*",
+    "klein/klein": "^2.1"
+  }
+}

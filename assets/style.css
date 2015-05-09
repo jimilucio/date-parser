@@ -1,0 +1,10 @@
+.listFile li{
+	list-style: none;
+	border-bottom: 1px solid #e2e2e2;
+	line-height: 30px;
+	font-size: 12px;
+}
+
+.listFile li input{
+	margin-right: 10px;
+}

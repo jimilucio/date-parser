@@ -1,0 +1,23 @@
+{
+  "name": "date-parser",
+  "version": "0.0.2",
+  "homepage": "https://github.com/jimilucio/date-parser",
+  "authors": [
+    "Luciano Murruni <luciano.murruni@gmail.com>"
+  ],
+  "description": "CSV parser for trading users",
+  "main": "index.php",
+  "keywords": [
+    "trading",
+    "parser",
+    "php"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

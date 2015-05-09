@@ -1,40 +1,18 @@
-<?php include("header.php"); ?>
-<?php include("class/upload.php"); ?>
-    <content>
-      <?php
-      if (array_key_exists('action', $_REQUEST) && $_REQUEST['action'] === 'upload') {
+<?php 
+require_once __DIR__ . '/vendor/autoload.php';
 
-        $file2Upload = $_FILES['parseFile'];
+$klein = new \Klein\Klein();
 
-        if ($file2Upload['size'] == 0){
-          print "Inserire un file valido";
-          return;
-        }
+$klein->respond(array('POST','GET'), '/', function ($request) {
+    include ("header.php");
+    include ("./upload.php");
+});
+$klein->respond(array('POST','GET'), '/parse', function ($request) {
+    include ("header.php");
+    include ("parse.php");
+});
 
-        $upload = new Upload($file2Upload);
-        $upload->save(DATA_FOLDER);
 
-      }
+$klein->dispatch();
 
-      ?>
-
-      <div class="row">
-        <div class="large-6 columns">
-          <fieldset>
-            <legend>Upload CSV completo</legend>
-            <form action="<?=$_SERVER['PHP_SELF']?>" enctype="multipart/form-data" method="POST">
-              <input type="hidden" name="action" value="upload">
-              <!-- MAX_FILE_SIZE deve precedere campo di input del nome file -->
-              <input type="hidden" name="MAX_FILE_SIZE" value="99999999" />
-              <input type="file" name="parseFile" />
-              <input type="submit" value="salva">
-            </form>
-          </fieldset>
-        </div>
-        <div class="large-6 columns"></div>
-      </div>
-
-    </content>
-    
-  </body>
-</html>
+?>
