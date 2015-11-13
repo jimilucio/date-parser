@@ -6,8 +6,13 @@ class Parser
 
     private $dataFile;
     private $dateList;
+
     private $timezones;
+
+    //Start from the date to search this params remove specified minute from DB
     private $minutes2remove;
+
+    //Start from the date to search this params add specified minute from DB
     private $minutes2add;
     private $contents;
 
@@ -64,7 +69,8 @@ class Parser
 
             //create a new data object
             //print_r($data);
-            $dateObj = DateTime::createFromFormat('d.m.Y H:i:s', $data[0]);
+            $dateObj = DateTime::createFromFormat('d/m/Y H:i:s', $data[0]);
+
             $returnObj[] = $dateObj;
             $row++;
         }
@@ -102,28 +108,31 @@ class Parser
         $filterStartDate = new DateTime('@' . $startDate);
         $filterEndDate = new DateTime('@' . $endDate);
 
-        $this->parserLog("FilterStartDate: " . $filterStartDate->format('Y.m') . "\n");
-        $this->parserLog("FilterEndDate: " . $filterEndDate->format('Y.m') . "\n");
+        $this->parserLog("FilterStartDate: " . $filterStartDate->format('m/Y') . "\n");
+        $this->parserLog("FilterEndDate: " . $filterEndDate->format('m/Y') . "\n");
 
         //define data index
-        $dataIndex = $filterStartDate->format('Y.m');
+        $dataIndex = $filterStartDate->format('m/Y');
 
         if (array_key_exists($dataIndex, $this->contents)) {
 
             $startData = str_getcsv($this->contents[$dataIndex], "\n");
 
             $rowCreated = 0;
+
             foreach ($startData as $row) {
 
                 $rowData = str_getcsv($row, ',');
 
+
                 if ($rowData[0] != 'Time') {
 
-                    $tempData = DateTime::createFromFormat('Y.m.d H:i:s', $rowData[0]);
+                    $tempData = DateTime::createFromFormat('d/m/Y H:i:s', $rowData[0]);
 
                     $tempDataTimestamp = $tempData->getTimestamp();
 
-                    //echo "Start: " . $startDate ." - Date: " . $tempDataTimestamp." End:  ". $endDate."<br/>";
+                    //Debug.
+                    //echo "Start: " . $filterStartDate->format('d/m/Y H:i:s') ." - Date: " . $tempData->format('d/m/Y H:i:s')." End:  ". $filterEndDate->format('d/m/Y H:i:s')."<br/>";
 
                     if ($tempDataTimestamp <= $endDate && $tempDataTimestamp >= $startDate) {
 
@@ -209,14 +218,15 @@ class Parser
                 //get new value
                 $data2Append = fgets($fp);
 
-                $index = substr($data2Append, 0, 7);
+                $index = substr($data2Append, 3, 7);
 
                 //initialize the string
                 if (!array_key_exists($index, $this->contents)) {
                     $this->contents[$index] = '';
                 }
 
-                $this->contents[$index].= fgets($fp);
+                $this->contents[$index].= $data2Append;
+
             }
 
             fclose($fp);
@@ -245,14 +255,15 @@ class Parser
         $index = 0;
         foreach ($dateList as $value) {
 
-            $valueToMod1 = DateTime::createFromFormat('d.m.Y H:i:s', $value->format('d.m.Y H:i:s'));
-            $valueToMod2 = DateTime::createFromFormat('d.m.Y H:i:s', $value->format('d.m.Y H:i:s'));
+            $valueToMod1 = DateTime::createFromFormat('d/m/Y H:i:s', $value->format('d/m/Y H:i:s'));
+            $valueToMod2 = DateTime::createFromFormat('d/m/Y H:i:s', $value->format('d/m/Y H:i:s'));
             $startDate = $valueToMod1->sub(new DateInterval('PT' . $minutes_to_remove . 'M'));
             $endDate = $valueToMod2->add(new DateInterval('PT' . $minutes_to_add . 'M'));
 
-            $this->parserLog("Try csv from date: " . $value->format('d-m-Y H:i:s'));
-            $this->parserLog("Start date to filter: " . $startDate->format('d-m-Y H:i:s'));
-            $this->parserLog("End date to filter: " . $endDate->format('d-m-Y H:i:s'));
+            $this->parserLog("Try csv from date: " . $value->format('d/m/Y H:i:s'));
+            $this->parserLog("Start date to filter: " . $startDate->format('d/m/Y H:i:s'));
+            $this->parserLog("End date to filter: " . $endDate->format('d/m/Y H:i:s'));
+
             $index++;
             $this->generateListFromDate($startDate->getTimestamp(), $endDate->getTimestamp(), $index);
         }

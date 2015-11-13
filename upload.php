@@ -7,10 +7,11 @@ require_once __DIR__ . '/class/upload.php';
   $alert = '';
   $success = '';
 
+  print_r($_REQUEST);
   if (array_key_exists('action', $_REQUEST) && $_REQUEST['action'] === 'upload') {
 
     if (array_key_exists('dataFile', $_FILES) && $_FILES['dataFile']['name']) {
-      
+
       $file2Upload = $_FILES['dataFile'];
       if ($file2Upload['size'] == 0){
         $alert = "Inserire un file zip valido";
@@ -22,11 +23,11 @@ require_once __DIR__ . '/class/upload.php';
       $success .= 'File size: '.$file2Upload['size'].'<br>';
 
     } else if (array_key_exists('dateList', $_FILES) && $_FILES['dateList']['name']) {
-      
+
       $file2Upload = $_FILES['dateList'];
       if ($file2Upload['size'] == 0){
         $alert = "Inserire un file csv valido";
-        
+
       }
       $uploadFile = new UploadFile($file2Upload);
       $uploadFile->save(DATE_LIST);
@@ -38,12 +39,12 @@ require_once __DIR__ . '/class/upload.php';
   }
 
   ?>
-  
+
   <div class="row">
     <div class="large-12 columns">
       <?php if ($alert) {?>
         <span class="[alert secondary] [round radius] label"><?php echo $alert;?></span>
-      <?php } 
+      <?php }
       if ($success) {?>
         <span class="[success primary] [round radius] label"><?php echo $success;?></span>
       <?php } ?>
@@ -67,11 +68,11 @@ require_once __DIR__ . '/class/upload.php';
       </fieldset>
     </div>
     <div class="large-6 columns">
-      
+
       <fieldset>
         <legend>Upload list of date</legend>
         <form action="/" enctype="multipart/form-data" method="POST">
-          
+
           <label>Insert file</label>
           <br>
           <input type="hidden" name="action" value="upload">
