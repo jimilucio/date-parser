@@ -1,251 +1,287 @@
-<?php 
-
-class Parser{
-		
-	private $dataFile;
-	private $dateList;
-	private $timezones;
-	private $minutes2remove;
-	private $minutes2add;
-	private $contents;
-	
-	private $logInfo;
-	private $logData;
-
-	//define the name of new directory
-	private $directory;
-
-	/**
-	* Constructor of class Parser
-	* @params: $dataFile string [is the zip file with all data inside]
-	* @params: $dateList string [is the csv file with filter data]
-	*/
-	public function __construct($dataFile, $dateList){
-
-		$this->dataFile = $dataFile;
-		$this->dateList = $dateList;
-		$this->directory = RESULTS.date('Y.m.d.H.i');
-		$this->minutes2remove = 10;
-		$this->minutes2add = 2880;
-		$this->timezones = array('Europe/Rome');
-		$this->logInfo = array();
-		$this->logData = array();
-		$this->contents = array();
-
-	}
-
-	private function parserLog($info, $type = 'info'){
-		if ($type == 'data'){
-			array_push($this->logData, $info);
-		} else { 
-			array_push($this->logInfo, $info);
-		}
-	}
-
-	/**
-	* 
-	*/
-	private function getDateList(){
-
-		$filename = DATE_LIST.$this->dateList;
-		$handle = fopen($filename,"r");
-		$this->parserLog("Open file: ".$filename."\n");
-		$row = 0;
-		while (($data = fgetcsv($handle, 20, "\n")) !== FALSE) {
-
-		   //create a new data object
-		   //print_r($data);
-		   $dateObj = DateTime::createFromFormat('d.m.Y H:i:s', $data[0]);
-		   $returnObj[] = $dateObj;
-		   $row++;
-		}
-
-		$this->parserLog("Record found: ".$row."\n");
-		fclose($handle);
-
-		return $returnObj;
-
-	}
-
-	private function generateListFromDate($startDate, $endDate, $index){
-
-	    //create directory if not exists
-	   	if (!file_exists($this->directory)) {
-		    mkdir($this->directory, 0777, true);
-		}
-
-		//define file name of new csv trunk
-	   	$fileName = str_pad($index, 3, "0", STR_PAD_LEFT);
-	   	$filenameWrite = $this->directory."/".$fileName.".csv";
-
-	   	//open new file with name defined (es 001.csv)
-	   	$handleWrite = fopen($filenameWrite,"w");
-   		$this->parserLog("Write file: ".$filenameWrite."\n");
-	   	
-	   	//contents are saved with index Y.m (es: 2007.01)
-	   	//define index for filter csv information
-	   	$filterStartDate = new DateTime('@'.$startDate);
-	   	$filterEndDate = new DateTime('@'.$endDate);
-
-	   	$this->parserLog("FilterStartDate: ".$filterStartDate->format('Y.m')."\n");
-	   	$this->parserLog("FilterEndDate: ".$filterEndDate->format('Y.m')."\n");
-
-	   	//define data index
-	   	$dataIndex = $filterStartDate->format('Y.m');
+<?php
 
 
-	   	if(array_key_exists($dataIndex, $this->contents)){
+class Parser
+{
+
+    private $dataFile;
+    private $dateList;
+
+    private $timezones;
+
+    //Start from the date to search this params remove specified minute from DB
+    private $minutes2remove;
+
+    //Start from the date to search this params add specified minute from DB
+    private $minutes2add;
+    private $contents;
+
+    private $logInfo;
+    private $logData;
+
+    //define the name of new directory
+    private $directory;
+
+    /**
+     * Constructor of class Parser
+     * @params: $dataFile string [is the zip file with all data inside]
+     * @params: $dateList string [is the csv file with filter data]
+     */
+    public function __construct($dataFile, $dateList) {
+
+        $this->dataFile = $dataFile;
+        $this->dateList = $dateList;
+        $this->directory = RESULTS . date('Y.m.d.H.i');
+        $this->minutes2remove = 10;
+        $this->minutes2add = 2880;
+        $this->timezones = array('Europe/Rome');
+        $this->logInfo = array();
+        $this->logData = array();
+        $this->contents = array();
+    }
+
+    /**
+     * [parserLog description]
+     * @param  [type]
+     * @param  string
+     * @return [type]
+     */
+    private function parserLog($info, $type = 'info') {
+        if ($type == 'data') {
+            array_push($this->logData, $info);
+        }
+        else {
+            array_push($this->logInfo, $info);
+        }
+    }
+
+    /**
+     * [getDateList description]
+     * @return [type]
+     */
+    private function getDateList() {
+
+        $filename = DATE_LIST . $this->dateList;
+        $handle = fopen($filename, "r");
+        $this->parserLog("Open file: " . $filename . "\n");
+        $row = 0;
+        while (($data = fgetcsv($handle, 20, "\n")) !== FALSE) {
+
+            //create a new data object
+            //print_r($data);
+            $dateObj = DateTime::createFromFormat('d/m/Y H:i:s', $data[0]);
+
+            $returnObj[] = $dateObj;
+            $row++;
+        }
+
+        $this->parserLog("Record found: " . $row . "\n");
+        fclose($handle);
+
+        return $returnObj;
+    }
+
+    /**
+     * [generateListFromDate description]
+     * @param  [type]
+     * @param  [type]
+     * @param  [type]
+     * @return [type]
+     */
+    private function generateListFromDate($startDate, $endDate, $index) {
+
+        //create directory if not exists
+        if (!file_exists($this->directory)) {
+            mkdir($this->directory, 0777, true);
+        }
+
+        //define file name of new csv trunk
+        $fileName = str_pad($index, 3, "0", STR_PAD_LEFT);
+        $filenameWrite = $this->directory . "/" . $fileName . ".csv";
+
+        //open new file with name defined (es 001.csv)
+        $handleWrite = fopen($filenameWrite, "w");
+        $this->parserLog("Write file: " . $filenameWrite . "\n");
+
+        //contents are saved with index Y.m (es: 2007.01)
+        //define index for filter csv information
+        $filterStartDate = new DateTime('@' . $startDate);
+        $filterEndDate = new DateTime('@' . $endDate);
+
+        $this->parserLog("FilterStartDate: " . $filterStartDate->format('m/Y') . "\n");
+        $this->parserLog("FilterEndDate: " . $filterEndDate->format('m/Y') . "\n");
+
+        //define data index
+        $dataIndex = $filterStartDate->format('m/Y');
+
+        if (array_key_exists($dataIndex, $this->contents)) {
+
+            $startData = str_getcsv($this->contents[$dataIndex], "\n");
+
+            $rowCreated = 0;
+
+            foreach ($startData as $row) {
+
+                $rowData = str_getcsv($row, ',');
 
 
-		   	$startData = str_getcsv($this->contents[$dataIndex], "\n");
+                if ($rowData[0] != 'Time') {
 
-		   	
-		   	$rowCreated = 0;
-		   	foreach ($startData as $row) {
+                    $tempData = DateTime::createFromFormat('d/m/Y H:i:s', $rowData[0]);
 
-	   			$rowData = 	str_getcsv($row, ',');
+                    $tempDataTimestamp = $tempData->getTimestamp();
 
-	   			if ($rowData[0] != 'Time'){
-		          
-		          $tempData = DateTime::createFromFormat('Y.m.d H:i:s', $rowData[0]);
+                    //Debug.
+                    //echo "Start: " . $filterStartDate->format('d/m/Y H:i:s') ." - Date: " . $tempData->format('d/m/Y H:i:s')." End:  ". $filterEndDate->format('d/m/Y H:i:s')."<br/>";
 
-		          $tempDataTimestamp = $tempData->getTimestamp();
+                    if ($tempDataTimestamp <= $endDate && $tempDataTimestamp >= $startDate) {
 
-		          //echo "Start: " . $startDate ." - Date: " . $tempDataTimestamp." End:  ". $endDate."<br/>";
-		          
-		          if($tempDataTimestamp <= $endDate && $tempDataTimestamp >= $startDate){
-		          	//echo "Start: " . $startDate ." - Date: " . $tempDataTimestamp." End:  ". $endDate."<br/> Save value: ". $value."<br><br>";
-		          	fputcsv($handleWrite, $rowData);
-		            $rowCreated++;
-		          } 
+                        //Change data from . to /
+                        $rowData[0] = $tempData->format("Y/m/d H:i:s");
+                        //echo "Start: " . $startDate ." - Date: " . $tempDataTimestamp." End:  ". $endDate."<br/> Save value: ". $value."<br><br>";
+                        fputcsv($handleWrite, $rowData);
+                        $rowCreated++;
+                    }
+                }
+            }
 
-		        }
+            $this->parserLog("Total row: " . $rowCreated . "\n");
 
-		   	}
-		   	
-		   	$this->parserLog("Total row: ".$rowCreated."\n");
-		    
-		    fclose($handleWrite);
-		    
-		    //$this->parserLog("File creato: <a href='./".$filenameWrite."'>". $filenameWrite."</a>", 'data');
-		} else {
+            fclose($handleWrite);
 
-			$this->parserLog("Indice non trovato: ". $dataIndex);
+            //$this->parserLog("File creato: <a href='./".$filenameWrite."'>". $filenameWrite."</a>", 'data');
 
-		}
-	}
 
-	private function createZip(){
+        }
+        else {
 
-		// Get real path for our folder
-		$rootPath = realpath($this->directory);
+            $this->parserLog("Indice non trovato: " . $dataIndex);
+        }
+    }
 
-		// Initialize archive object
-		$zip = new ZipArchive();
-		$zip->open($this->directory.'.zip', ZipArchive::CREATE | ZipArchive::OVERWRITE);
+    /**
+     * [createZip description]
+     * @return [type]
+     */
+    private function createZip() {
 
-		// Create recursive directory iterator
-		/** @var SplFileInfo[] $files */
-		$files = new RecursiveIteratorIterator(
-		    new RecursiveDirectoryIterator($rootPath),
-		    RecursiveIteratorIterator::LEAVES_ONLY
-		);
+        // Get real path for our folder
+        $rootPath = realpath($this->directory);
 
-		foreach ($files as $name => $file)
-		{
-		    // Skip directories (they would be added automatically)
-		    if (!$file->isDir())
-		    {
-		        // Get real and relative path for current file
-		        $filePath = $file->getRealPath();
-		        $relativePath = substr($filePath, strlen($rootPath) + 1);
+        // Initialize archive object
+        $zip = new ZipArchive();
+        $zip->open($this->directory . '.zip', ZipArchive::CREATE | ZipArchive::OVERWRITE);
 
-		        // Add current file to archive
-		        $zip->addFile($filePath, $relativePath);
-		    }
-		}
+        // Create recursive directory iterator
 
-		// Zip archive will be created only after closing object
-		$zip->close();
-		$this->parserLog("File creato: <a href='./".$this->directory.".zip'>".$this->directory.".zip</a>", 'data');
 
-	}
 
-	private function unzip($dataFile){
+        /** @var SplFileInfo[] $files */
+        $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($rootPath), RecursiveIteratorIterator::LEAVES_ONLY);
 
-		$zip = new ZipArchive;
-		if ($zip->open($dataFile)) {
-			
-			$info = $zip->statIndex(0);
+        foreach ($files as $name => $file) {
 
-			$this->parserLog('Filename founded: '. $info['name']);
-			$fp = $zip->getStream($info['name']);
+            // Skip directories (they would be added automatically)
+            if (!$file->isDir()) {
 
-			
-			while (!feof($fp)) {
-		        
-		        //get new value
-		        $data2Append = fgets($fp);
+                // Get real and relative path for current file
+                $filePath = $file->getRealPath();
+                $relativePath = substr($filePath, strlen($rootPath) + 1);
 
-		        $index = substr($data2Append, 0, 7);
-		        
-		        //initialize the string
-		        if (!array_key_exists($index, $this->contents)){
-		        	$this->contents[$index] = '';
-		        }
+                // Add current file to archive
+                $zip->addFile($filePath, $relativePath);
+            }
+        }
 
-		        $this->contents[$index] .= fgets($fp);
-		        
-		    }
+        // Zip archive will be created only after closing object
+        $zip->close();
+        $this->parserLog("File creato: <a href='./" . $this->directory . ".zip'>" . $this->directory . ".zip</a>", 'data');
+    }
 
-	        fclose($fp);
-	        $zip->close();
+    /**
+     * [unzip description]
+     * @param  [type]
+     * @return [type]
+     */
+    private function unzip($dataFile) {
 
-		}
+        $zip = new ZipArchive;
+        if ($zip->open($dataFile)) {
 
-	}
+            $info = $zip->statIndex(0);
 
-	public function parseFile(){
+            $this->parserLog('Filename founded: ' . $info['name']);
+            $fp = $zip->getStream($info['name']);
 
-		$timezones = $this->timezones;
+            while (!feof($fp)) {
 
-		$this->parserLog('Set timezones in ' . print_r($timezones, true));
-		$minutes_to_remove = $this->minutes2remove;
-		$minutes_to_add = $this->minutes2add;
+                //get new value
+                $data2Append = fgets($fp);
 
-		$dateList = $this->getDateList();
+                $index = substr($data2Append, 3, 7);
 
-		//Unzip file from source
-		$this->parserLog('Unzip file: '. $this->dataFile);
-		$this->unzip(DATA_FOLDER.$this->dataFile);
-		
-		$index = 0;
-		foreach ($dateList as $value) {
+                //initialize the string
+                if (!array_key_exists($index, $this->contents)) {
+                    $this->contents[$index] = '';
+                }
 
-		   $valueToMod1 = DateTime::createFromFormat('d.m.Y H:i:s', $value->format( 'd.m.Y H:i:s' ));
-		   $valueToMod2 = DateTime::createFromFormat('d.m.Y H:i:s', $value->format( 'd.m.Y H:i:s' ));
-		   $startDate = $valueToMod1->sub(new DateInterval('PT'.$minutes_to_remove.'M'));
-		   $endDate = $valueToMod2->add(new DateInterval('PT'.$minutes_to_add.'M'));
+                $this->contents[$index].= $data2Append;
 
-		   $this->parserLog("Try csv from date: ".$value->format( 'd-m-Y H:i:s' ));
-		   $this->parserLog("Start date to filter: ". $startDate->format('d-m-Y H:i:s'));
-		   $this->parserLog("End date to filter: ". $endDate->format('d-m-Y H:i:s'));
-		   $index++;
-		   $this->generateListFromDate($startDate->getTimestamp(), $endDate->getTimestamp(), $index);
+            }
 
-		}
+            fclose($fp);
+            $zip->close();
+        }
+    }
 
-		$this->createZip();
+    /**
+     * [parseFile description]
+     * @return [type]
+     */
+    public function parseFile() {
 
-	}
+        $timezones = $this->timezones;
 
-	public function getLog($type='data'){
-		if ($type == 'info'){
-			return $this->logInfo;	
-		}else{
-			return $this->logData;	
-		}
-		
-	}
+        $this->parserLog('Set timezones in ' . print_r($timezones, true));
+        $minutes_to_remove = $this->minutes2remove;
+        $minutes_to_add = $this->minutes2add;
 
+        $dateList = $this->getDateList();
+
+        //Unzip file from source
+        $this->parserLog('Unzip file: ' . $this->dataFile);
+        $this->unzip(DATA_FOLDER . $this->dataFile);
+
+        $index = 0;
+        foreach ($dateList as $value) {
+
+            $valueToMod1 = DateTime::createFromFormat('d/m/Y H:i:s', $value->format('d/m/Y H:i:s'));
+            $valueToMod2 = DateTime::createFromFormat('d/m/Y H:i:s', $value->format('d/m/Y H:i:s'));
+            $startDate = $valueToMod1->sub(new DateInterval('PT' . $minutes_to_remove . 'M'));
+            $endDate = $valueToMod2->add(new DateInterval('PT' . $minutes_to_add . 'M'));
+
+            $this->parserLog("Try csv from date: " . $value->format('d/m/Y H:i:s'));
+            $this->parserLog("Start date to filter: " . $startDate->format('d/m/Y H:i:s'));
+            $this->parserLog("End date to filter: " . $endDate->format('d/m/Y H:i:s'));
+
+            $index++;
+            $this->generateListFromDate($startDate->getTimestamp(), $endDate->getTimestamp(), $index);
+        }
+
+        $this->createZip();
+    }
+
+    /**
+     * [getLog description]
+     * @param  string
+     * @return [type]
+     */
+    public function getLog($type = 'data') {
+        if ($type == 'info') {
+            return $this->logInfo;
+        }
+        else {
+            return $this->logData;
+        }
+    }
 }

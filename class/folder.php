@@ -1,9 +1,21 @@
 <?php
+/**
+ *  class Folder
+ */
 class Folder
 {
 
+	/**
+	 * [$items description]
+	 * @var [type]
+	 */
 	private $items;
 
+	/**
+	 * [readFolder description]
+	 * @param  [type]
+	 * @return [type]
+	 */
 	public function readFolder($folderPath){
 
 
@@ -18,9 +30,10 @@ class Folder
 
 			closedir($handle);
 			return $this->items;
-      	}
+	  	}
 
 
 	}
 
 }
+?>
